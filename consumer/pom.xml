@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>parent</artifactId>
-        <groupId>de.cdiag.techday.dockerextended</groupId>
+        <groupId>de.conciso.offsite.dockerextended</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
