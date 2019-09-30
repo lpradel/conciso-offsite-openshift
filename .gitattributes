@@ -1,0 +1,10 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Shell scripts need to always have nix line endings
+*.sh text eol=lf
+
+# OC yaml need to always have nix line endings
+/consumer/oc/*.yaml text eol=lf
+/producer/oc/*.yaml text eol=lf
+
