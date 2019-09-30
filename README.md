@@ -1,2 +1,2 @@
-# cdi-techday-openshift
-Techday Java @ CDI AG / Nov 5, 2018
+# conciso-offsite-openshift
+Dev/Arch Offsite @ Conciso / Oct 2, 2019
