@@ -1,21 +1,23 @@
-version: 3
+version: "3"
 services:
   producer:
     build:
-      dockerfile: producer/Dockerfile
+      context: ./producer
+      dockerfile: Dockerfile
     container_name: producer
     ports:
-    - 8282:8282
+      - 8282:8282
     volumes:
-    - "logfolder:./logs"
+      - "logfolder:./logs"
   consumer:
     build:
-      dockerfile: consumer/Dockerfile
+      context: ./consumer
+      dockerfile: Dockerfile
     container_name: consumer
     volumes:
-    - "logfolder:./logs"
+      - "logfolder:./logs"
     depends_on:
-    - producer
+      - producer
     environment:
       host: "producer"
       port: "8282"
