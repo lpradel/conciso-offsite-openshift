@@ -1,8 +1,9 @@
-version: 3
+version: "3"
 services:
   producer:
     build:
-      dockerfile: producer/Dockerfile
+      context: ./producer
+      dockerfile: Dockerfile
     container_name: producer
     ports:
     - 8282:8282
@@ -10,7 +11,8 @@ services:
     - "logfolder:./logs"
   consumer:
     build:
-      dockerfile: consumer/Dockerfile
+      context: ./consumer
+      dockerfile: Dockerfile
     container_name: consumer
     volumes:
     - "logfolder:./logs"
