@@ -1,0 +1,125 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  template: producer
+parameters:
+- name: NAME
+  description: The name assigned to all of the frontend objects defined in this template.
+  displayName: Name
+  required: true
+  value: producer
+
+- name: NAMESPACE
+  description: The OpenShift Namespace where the ImageStream resides.
+  displayName: Namespace
+  required: true
+  value: cdi-techday
+
+- name: MEMORY_LIMIT
+  description: Maximum amount of memory the container can use.
+  displayName: Memory Limit
+  required: true
+  value: 512Mi
+
+- name: CONTEXT_DIR
+  description: Set this to the relative path to your project if it is not in the root of your repository.
+  displayName: Context Directory
+  value: ''
+
+- name: APPLICATION_DOMAIN
+  description: The exposed hostname that will route to the Node.js service, if left blank a value will be defaulted.
+  displayName: Application Hostname
+  value: ''
+
+- name: PROBE
+  description: The path of the readiness probe and liveness probe
+  displayName: Path Probe
+  value: ''
+
+- name: SERVER_PORT
+  description: The port the server will run on inside the container
+  displayName: Server Port
+  value: '8080'
+
+- name: LOG_LEVEL
+  description: Log level applied to the process
+  displayName: Log Level
+  value: 'debug'
+
+objects:
+- kind: Service
+  apiVersion: v1
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+    name: "${NAME}"
+  spec:
+    ports:
+    - name: http
+      port: 8080
+      targetPort: 8282
+    selector:
+      name: "${NAME}"
+
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: "${NAME}"
+  spec:
+    host: "${APPLICATION_DOMAIN}"
+    to:
+      kind: Service
+      name: "${NAME}"
+
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: "${NAME}"
+  selector:
+    name: "${NAME}"
+  spec:
+    selector:
+      name: "${NAME}"
+    ImagePullPolicy: Always
+    replicas: 1
+    strategy:
+      type: "Recreate"
+    template:
+      metadata:
+        labels:
+          name: "${NAME}"
+        name: "${NAME}"
+      spec:
+        containers:
+          - name: ${NAME}
+            env:
+            #  - name: "SERVER_PORT"
+            #    value: "${SERVER_PORT}"
+            #  - name: "LOG_LEVEL"
+            #    value: "${LOG_LEVEL}"
+            image: "${NAMESPACE}/${NAME}:latest"
+            ports:
+              - containerPort: 8282
+            readinessProbe:
+              httpGet:
+                path: "${PROBE}"
+                port: 8282
+              initialDelaySeconds: 15
+              timeoutSeconds: 3
+            livenessProbe:
+              httpGet:
+                path: "${PROBE}"
+                port: 8282
+              initialDelaySeconds: 30
+              timeoutSeconds: 3
+    triggers:
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          containerNames:
+            - ${NAME}
+          from:
+            kind: ImageStreamTag
+            name: "${NAME}:latest"
+
