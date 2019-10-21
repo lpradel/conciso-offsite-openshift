@@ -9,7 +9,7 @@ services:
     ports:
     - 8282:8282
     volumes:
-    - "logfolder:./logs"
+    - logfolder:/log
   consumer:
     build:
       context: ./consumer
@@ -17,11 +17,11 @@ services:
     image: consumer:1.0
     container_name: consumer
     volumes:
-    - "logfolder:./logs"
+    - logfolder:/log
     depends_on:
     - producer
     environment:
-      host: "producer"
-      port: "8282"
+      host: producer
+      port: 8282
 volumes:
   logfolder:
